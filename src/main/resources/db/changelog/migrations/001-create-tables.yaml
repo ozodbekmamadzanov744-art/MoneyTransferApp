@@ -1,0 +1,257 @@
+databaseChangeLog:
+- changeSet:
+    id: 001-create-tables
+    author: Ozodbek Mamadjanov
+    changes:
+    - createTable:
+        tableName: app_users
+        columns:
+        - column:
+            name: id
+            type: BIGINT
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: username
+            type: VARCHAR(40)
+            constraints:
+              nullable: false
+              unique: true
+        - column:
+            name: password
+            type: VARCHAR(255)
+            constraints:
+              nullable: false
+        - column:
+            name: role
+            type: VARCHAR(20)
+            constraints:
+              nullable: false
+    - createTable:
+        tableName: currency_rates
+        columns:
+        - column:
+            name: code
+            type: VARCHAR(3)
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: units_per_usd
+            type: DECIMAL(19,6)
+            constraints:
+              nullable: false
+    - createTable:
+        tableName: accounts
+        columns:
+        - column:
+            name: id
+            type: BIGINT
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: user_id
+            type: BIGINT
+            constraints:
+              nullable: false
+        - column:
+            name: currency
+            type: VARCHAR(3)
+            constraints:
+              nullable: false
+        - column:
+            name: balance
+            type: DECIMAL(19,2)
+            constraints:
+              nullable: false
+    - createTable:
+        tableName: service_providers
+        columns:
+        - column:
+            name: id
+            type: BIGINT
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: name
+            type: VARCHAR(255)
+            constraints:
+              nullable: false
+        - column:
+            name: currency
+            type: VARCHAR(3)
+            constraints:
+              nullable: false
+    - createTable:
+        tableName: subscribers
+        columns:
+        - column:
+            name: id
+            type: BIGINT
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: provider_id
+            type: BIGINT
+            constraints:
+              nullable: false
+        - column:
+            name: reference
+            type: VARCHAR(40)
+            constraints:
+              nullable: false
+        - column:
+            name: balance
+            type: DECIMAL(19,2)
+            constraints:
+              nullable: false
+    - createTable:
+        tableName: money_transactions
+        columns:
+        - column:
+            name: id
+            type: BIGINT
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: type
+            type: VARCHAR(20)
+            constraints:
+              nullable: false
+        - column:
+            name: status
+            type: VARCHAR(20)
+            constraints:
+              nullable: false
+        - column:
+            name: source_id
+            type: BIGINT
+        - column:
+            name: target_id
+            type: BIGINT
+        - column:
+            name: subscriber_id
+            type: BIGINT
+        - column:
+            name: amount
+            type: DECIMAL(19,2)
+            constraints:
+              nullable: false
+        - column:
+            name: currency
+            type: VARCHAR(3)
+            constraints:
+              nullable: false
+        - column:
+            name: credited_amount
+            type: DECIMAL(19,2)
+            constraints:
+              nullable: false
+        - column:
+            name: credited_currency
+            type: VARCHAR(3)
+            constraints:
+              nullable: false
+        - column:
+            name: rate
+            type: DECIMAL(19,8)
+            constraints:
+              nullable: false
+        - column:
+            name: created_at
+            type: TIMESTAMP
+            constraints:
+              nullable: false
+        - column:
+            name: processed_at
+            type: TIMESTAMP
+        - column:
+            name: reviewed_by
+            type: BIGINT
+        - column:
+            name: failure_key
+            type: VARCHAR(80)
+    - addUniqueConstraint:
+        tableName: accounts
+        columnNames: user_id,currency
+        constraintName: uq_user_currency
+    - addUniqueConstraint:
+        tableName: subscribers
+        columnNames: provider_id,reference
+        constraintName: uq_provider_reference
+    - addForeignKeyConstraint:
+        baseTableName: accounts
+        baseColumnNames: user_id
+        referencedTableName: app_users
+        referencedColumnNames: id
+        constraintName: fk_accounts_user_id
+    - addForeignKeyConstraint:
+        baseTableName: accounts
+        baseColumnNames: currency
+        referencedTableName: currency_rates
+        referencedColumnNames: code
+        constraintName: fk_accounts_currency
+    - addForeignKeyConstraint:
+        baseTableName: service_providers
+        baseColumnNames: currency
+        referencedTableName: currency_rates
+        referencedColumnNames: code
+        constraintName: fk_service_providers_currency
+    - addForeignKeyConstraint:
+        baseTableName: subscribers
+        baseColumnNames: provider_id
+        referencedTableName: service_providers
+        referencedColumnNames: id
+        constraintName: fk_subscribers_provider_id
+    - addForeignKeyConstraint:
+        baseTableName: money_transactions
+        baseColumnNames: source_id
+        referencedTableName: accounts
+        referencedColumnNames: id
+        constraintName: fk_money_transactions_source_id
+    - addForeignKeyConstraint:
+        baseTableName: money_transactions
+        baseColumnNames: target_id
+        referencedTableName: accounts
+        referencedColumnNames: id
+        constraintName: fk_money_transactions_target_id
+    - addForeignKeyConstraint:
+        baseTableName: money_transactions
+        baseColumnNames: subscriber_id
+        referencedTableName: subscribers
+        referencedColumnNames: id
+        constraintName: fk_money_transactions_subscriber_id
+    - addForeignKeyConstraint:
+        baseTableName: money_transactions
+        baseColumnNames: currency
+        referencedTableName: currency_rates
+        referencedColumnNames: code
+        constraintName: fk_money_transactions_currency
+    - addForeignKeyConstraint:
+        baseTableName: money_transactions
+        baseColumnNames: credited_currency
+        referencedTableName: currency_rates
+        referencedColumnNames: code
+        constraintName: fk_money_transactions_credited_currency
+    - addForeignKeyConstraint:
+        baseTableName: money_transactions
+        baseColumnNames: reviewed_by
+        referencedTableName: app_users
+        referencedColumnNames: id
+        constraintName: fk_money_transactions_reviewed_by
+    - sql: ALTER TABLE accounts ADD CONSTRAINT chk_accounts_balance CHECK (balance
+        >= 0)
+    - sql: ALTER TABLE subscribers ADD CONSTRAINT chk_subscribers_balance CHECK (balance
+        >= 0)
+    - sql: ALTER TABLE accounts ADD CONSTRAINT chk_account_number CHECK (id BETWEEN
+        100000 AND 999999)
