@@ -1,0 +1,1 @@
+<#import "layout.ftlh" as l><@l.page 'error.title'><section class="narrow"><h1><@l.msg 'error.title'/></h1><p class="alert"><@l.msg (errorKey!'error.unexpected')/></p><a class="button" href="/"><@l.msg 'action.home'/></a></section></@l.page>

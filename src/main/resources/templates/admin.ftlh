@@ -1,0 +1,1 @@
+<#import "layout.ftlh" as l><@l.page 'nav.admin'><h1><@l.msg 'nav.admin'/></h1><div class="actions"><a class="button <#if pendingOnly>secondary</#if>" href="/admin"><@l.msg 'admin.all'/></a><a class="button <#if !pendingOnly>secondary</#if>" href="/admin?pending=true"><@l.msg 'admin.pending'/></a></div><@l.table transactions true/></@l.page>

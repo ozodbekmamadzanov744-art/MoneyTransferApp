@@ -1,0 +1,3 @@
+<#import "layout.ftlh" as l><@l.page 'nav.transfer'><h1><@l.msg 'nav.transfer'/></h1><@l.rates rates/>
+<section class="narrow"><#if accounts?has_content><form method="post" action="/transfer" class="stack"><@l.csrf/><@l.source accounts=accounts selected=(transferDto.sourceId!0)/><@l.fieldErrors "transferDto.sourceId"/>
+<@l.field "transferDto.targetId" "field.target"/><@l.field "transferDto.amount" "field.amount"/><p class="muted"><@l.msg 'amount.help'/></p><button><@l.msg 'action.transfer'/></button></form><p class="muted"><@l.msg 'moderation.help'/></p><p class="muted"><@l.msg 'rates.fixed'/></p><#else><p><@l.msg 'accounts.empty'/></p><a href="/"><@l.msg 'accounts.create'/></a></#if></section></@l.page>

@@ -1,0 +1,3 @@
+<#import "layout.ftlh" as l><@l.page 'nav.history'><h1><@l.msg 'nav.history'/></h1><section><form method="get" action="/history" class="inline">
+<label><@l.msg 'field.from'/><input type="date" name="from" value="${fromValue}"></label><label><@l.msg 'field.to'/><input type="date" name="to" value="${toValue}"></label>
+<label><@l.msg 'field.sort'/><select name="sort"><#list ['date','currencyAsc','currencyDesc'] as key><option value="${key}" <#if sortValue==key>selected</#if>><@l.msg 'sort.'+key/></option></#list></select></label><button><@l.msg 'action.filter'/></button><a href="/history"><@l.msg 'action.reset'/></a></form></section><@l.table transactions/></@l.page>
